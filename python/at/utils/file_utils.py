@@ -145,3 +145,39 @@ def rename_sequencial(src, stem, padding=5, start_num=0):
             seq += 1
     
     logger.info("%d files renamed", seq)
+
+def list_files(src, mode="simple", loc="files_list.csv", sep=","):
+    """Creates a coma separated list of the files in the source folder.
+    :param src: The source folder where the files are located
+    :type src: string
+    :param mode: The mode of data generation. Can be:
+    * `simple` - only file names are listed
+    * `full` - path, filename, filesize and modification time (in seconds) are listed
+    :type mode: string
+    :param loc: Path to save the resulting list
+    :type loc: string
+    :param sep: The separator to use. Can be `,` (default) or `\t`
+    :type sep: string    
+    """
+    with open(loc, "w") as f:
+        # write the header
+        if mode == 'simple':
+            line = "file_name"
+        elif mode == 'full':
+            line = "location" + sep + "filename" + sep + "size" + sep + \
+                   "last_modified"
+        line += "\n"
+        f.write(line)
+
+        for item in os.listdir(src):
+            file_path = os.path.join(src, item)
+            # list only files
+            if os.path.isfile(file_path):
+                if mode == 'simple':
+                    line = item
+                elif mode == 'full':
+                    file_info = os.stat(file_path)
+                    line = src + sep + item + sep + str(file_info.st_size) + sep + \
+                           str(file_info.st_mtime)
+                line += "\n"
+                f.write(line)
