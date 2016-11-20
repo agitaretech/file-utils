@@ -10,6 +10,8 @@
 import logging
 import os
 import os.path
+from os import listdir
+from os.path import isfile, join, basename
 from shutil import copyfile
 
 # use default logging configuration
@@ -181,3 +183,19 @@ def list_files(src, mode="simple", loc="files_list.csv", sep=","):
                            str(file_info.st_mtime)
                 line += "\n"
                 f.write(line)
+
+def count_files_in_subfolders(root, loc="files_report.csv", sep=","):
+    """Counts the files in the subfolders from the specified root folder and saves
+    the result in the spceified CSV file. The format is (folder_name, count).
+    :param root: The root folder to iterate
+    :type root: string
+    :param loc: Path to save the resulting report
+    :type loc: string
+    :param sep: The separator to use. Can be `,` (default) or `\t`
+    :type sep: string    
+    """
+    with open(loc, "w") as f:
+        for root, subfolders, files in os.walk(root):
+            onlyfiles = [fn for fn in listdir(root) if isfile(join(root, fn))]
+            line = basename(root) + sep + str(len(onlyfiles)) + "\n"
+            f.write(line)
